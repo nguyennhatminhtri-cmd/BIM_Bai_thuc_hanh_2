@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra cứu Nhiệm vụ Bài thực hành 2 - Công nghệ BIM cơ bản</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --secondary: #0f172a;
+            --accent: #e11d48;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--secondary);
+            margin: 0;
+            padding: 20px 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border);
+            width: 100%;
+            max-width: 680px;
+            padding: 28px 24px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 18px;
+            margin-bottom: 22px;
+        }
+        .sub-header {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+        .title {
+            color: var(--primary-dark);
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin: 4px 0;
+            text-transform: uppercase;
+        }
+        .badge-class {
+            display: inline-block;
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            margin-top: 6px;
+        }
+        .form-section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: #334155;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 13px 16px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            transition: all 0.2s;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+        .btn-lookup {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        .btn-lookup:hover {
+            background: var(--primary-dark);
+        }
+        .name-preview {
+            display: none;
+            margin-top: 14px;
+            background: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+        }
+        .name-preview p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+        .name-preview b {
+            color: var(--primary-dark);
+            font-size: 1.05rem;
+        }
+        .btn-confirm {
+            display: none;
+            width: 100%;
+            margin-top: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-confirm:hover {
+            background: #15803d;
+        }
+        .error-msg {
+            display: none;
+            margin-top: 10px;
+            color: var(--accent);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+        .result-card {
+            display: none;
+            border: 1.5px solid #bae6fd;
+            background: #f0f9ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #bae6fd;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+        .result-header h3 {
+            margin: 0;
+            color: var(--primary-dark);
+            font-size: 1.15rem;
+        }
+        .timestamp {
+            font-size: 0.8rem;
+            color: #0369a1;
+            background: #e0f2fe;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 520px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .data-item {
+            background: white;
+            border: 1px solid #e0f2fe;
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+        .data-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .data-val {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 2px;
+        }
+        .data-val.highlight {
+            color: var(--accent);
+            font-size: 1.15rem;
+        }
+        .mission-box {
+            background: white;
+            border: 1px dashed #38bdf8;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #334155;
+        }
+        .mission-box ul {
+            margin: 6px 0 0 0;
+            padding-left: 20px;
+        }
+        .footer-note {
+            text-align: center;
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="sub-header">Khoa Kỹ thuật Xây dựng - ĐH Công nghiệp TP.HCM</div>
+        <div class="title">BÀI THỰC HÀNH SỐ 2 (CLO3)</div>
+        <div class="sub-header" style="color: #0284c7;">MÔN: CÔNG NGHỆ BIM CƠ BẢN</div>
+        <div class="badge-class">Lớp: DHXDGT20A</div>
+    </div>
+
+    <div class="form-section">
+        <label for="mssv-input">Nhập Mã số sinh viên (MSSV):</label>
+        <div class="input-group">
+            <input type="text" id="mssv-input" placeholder="Ví dụ: 24636231" maxlength="15" oninput="handleInput()">
+            <button class="btn-lookup" onclick="lookupStudent()">Kiểm tra</button>
+        </div>
+        <div id="error-msg" class="error-msg">Không tìm thấy MSSV này trong danh sách lớp DHXDGT20A!</div>
+
+        <div id="name-preview" class="name-preview">
+            <p>Sinh viên: <b id="preview-fullname">--</b></p>
+            <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">STT trong danh sách: <span id="preview-stt">--</span></p>
+        </div>
+
+        <button id="btn-confirm" class="btn-confirm" onclick="confirmTask()">XÁC NHẬN VÀ LẤY NHIỆM VỤ ĐỀ BÀI</button>
+    </div>
+
+    <div id="result-card" class="result-card">
+        <div class="result-header">
+            <h3>PHIẾU GIAO NHIỆM VỤ THỰC HÀNH</h3>
+            <span class="timestamp" id="log-time">--:--:--</span>
+        </div>
+
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="data-label">Họ và tên sinh viên</div>
+                <div class="data-val" id="res-name">--</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Mã số sinh viên (MSSV)</div>
+                <div class="data-val" id="res-mssv">--</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Cấu kiện yêu cầu</div>
+                <div class="data-val highlight" id="res-caukien">--</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Số dầm chủ (n)</div>
+                <div class="data-val" id="res-n">-- dầm</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Cự ly dầm S (m)</div>
+                <div class="data-val" id="res-s">-- m</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Mối nối ướt (mm)</div>
+                <div class="data-val" id="res-moinoi">-- mm</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Khổ cầu (m)</div>
+                <div class="data-val" id="res-khocau">-- m</div>
+            </div>
+            <div class="data-item">
+                <div class="data-label">Khổ xe chạy (m)</div>
+                <div class="data-val" id="res-khoxe">-- m</div>
+            </div>
+        </div>
+
+        <div class="mission-box">
+            <b>Yêu cầu thực hiện:</b>
+            <ul>
+                <li>Thực hiện bản vẽ: <b>FAMILY MỐ TRỤ CẦU</b> theo mặt cắt ngang cầu số liệu được giao.</li>
+                <li>Trình bày bản vẽ 3D và 3 đến 4 hình chiếu của cấu kiện yêu cầu.</li>
+                <li>Trình bày bản vẽ vào khung tên A3 của Khoa KTXD - IUH (rõ tên SV, MSSV, lớp, tên bản vẽ).</li>
+                <li>Nộp file thiết kế <code>.rvt</code> và file bản vẽ <code>.pdf</code> theo link Google Form do Giảng viên quy định.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Khoa Kỹ thuật Xây dựng - Trường Đại học Công nghiệp TP.HCM (IUH)
+    </div>
+</div>
+
+<script>
+const STUDENTS = [{"stt": 1, "msv": "24636231", "ho_dem": "Võ Thái", "ten": "An", "n": 5, "s": 1.8, "moi_noi": 200, "kho_cau": 9.6, "kho_xe": 9.0, "cau_kien": "Mố"}, {"stt": 2, "msv": "24645741", "ho_dem": "Hoàng Duy Hoài", "ten": "Anh", "n": 5, "s": 1.9, "moi_noi": 220, "kho_cau": 10.0, "kho_xe": 9.4, "cau_kien": "Mố"}, {"stt": 3, "msv": "24723241", "ho_dem": "Nguyễn Minh", "ten": "Chung", "n": 5, "s": 2.0, "moi_noi": 200, "kho_cau": 10.4, "kho_xe": 9.8, "cau_kien": "Mố"}, {"stt": 4, "msv": "24677111", "ho_dem": "Diệp Quốc", "ten": "Công", "n": 5, "s": 2.1, "moi_noi": 300, "kho_cau": 10.8, "kho_xe": 10.2, "cau_kien": "Mố"}, {"stt": 5, "msv": "24680871", "ho_dem": "Trần Hải", "ten": "Đăng", "n": 5, "s": 2.2, "moi_noi": 250, "kho_cau": 11.2, "kho_xe": 10.6, "cau_kien": "Mố"}, {"stt": 6, "msv": "23662181", "ho_dem": "Hoàng Tiến", "ten": "Đạt", "n": 5, "s": 2.4, "moi_noi": 300, "kho_cau": 12.0, "kho_xe": 11.4, "cau_kien": "Mố"}, {"stt": 7, "msv": "22666941", "ho_dem": "Văn Tiến", "ten": "Đạt", "n": 6, "s": 1.8, "moi_noi": 220, "kho_cau": 11.4, "kho_xe": 10.8, "cau_kien": "Mố"}, {"stt": 8, "msv": "22714471", "ho_dem": "Nguyễn Quốc", "ten": "Dũng", "n": 6, "s": 1.9, "moi_noi": 250, "kho_cau": 11.9, "kho_xe": 11.3, "cau_kien": "Mố"}, {"stt": 9, "msv": "23724281", "ho_dem": "Bùi Quốc", "ten": "Huy", "n": 6, "s": 2.0, "moi_noi": 200, "kho_cau": 12.4, "kho_xe": 11.8, "cau_kien": "Mố"}, {"stt": 10, "msv": "24661821", "ho_dem": "Phan Nhật", "ten": "Huy", "n": 6, "s": 2.1, "moi_noi": 300, "kho_cau": 12.9, "kho_xe": 12.3, "cau_kien": "Mố"}, {"stt": 11, "msv": "24647411", "ho_dem": "Nguyễn Vũ", "ten": "Kha", "n": 6, "s": 2.2, "moi_noi": 220, "kho_cau": 13.0, "kho_xe": 12.8, "cau_kien": "Mố"}, {"stt": 12, "msv": "23690041", "ho_dem": "Nguyễn Anh", "ten": "Khang", "n": 6, "s": 2.3, "moi_noi": 250, "kho_cau": 13.9, "kho_xe": 13.3, "cau_kien": "Mố"}, {"stt": 13, "msv": "24696201", "ho_dem": "Nguyễn Hoàng", "ten": "Khang", "n": 7, "s": 1.8, "moi_noi": 250, "kho_cau": 13.2, "kho_xe": 12.6, "cau_kien": "Trụ"}, {"stt": 14, "msv": "24663291", "ho_dem": "Trần Quỳnh", "ten": "Kiên", "n": 7, "s": 1.9, "moi_noi": 300, "kho_cau": 13.8, "kho_xe": 13.2, "cau_kien": "Trụ"}, {"stt": 15, "msv": "24699161", "ho_dem": "Huỳnh Tấn", "ten": "Lộc", "n": 7, "s": 2.0, "moi_noi": 200, "kho_cau": 14.4, "kho_xe": 13.8, "cau_kien": "Trụ"}, {"stt": 16, "msv": "23648051", "ho_dem": "Phạm Thành", "ten": "Long", "n": 7, "s": 2.1, "moi_noi": 300, "kho_cau": 15.0, "kho_xe": 14.4, "cau_kien": "Trụ"}, {"stt": 17, "msv": "24702271", "ho_dem": "Vũ Bình", "ten": "Minh", "n": 7, "s": 2.2, "moi_noi": 220, "kho_cau": 15.6, "kho_xe": 15.0, "cau_kien": "Trụ"}, {"stt": 18, "msv": "24696361", "ho_dem": "Phan Minh", "ten": "Nhật", "n": 7, "s": 2.3, "moi_noi": 250, "kho_cau": 16.2, "kho_xe": 15.6, "cau_kien": "Trụ"}, {"stt": 19, "msv": "24727171", "ho_dem": "Mai Văn", "ten": "Phong", "n": 7, "s": 2.4, "moi_noi": 300, "kho_cau": 16.8, "kho_xe": 16.2, "cau_kien": "Trụ"}, {"stt": 20, "msv": "24644761", "ho_dem": "Nguyễn Hữu", "ten": "Phong", "n": 8, "s": 1.8, "moi_noi": 300, "kho_cau": 15.0, "kho_xe": 14.4, "cau_kien": "Trụ"}, {"stt": 21, "msv": "22634441", "ho_dem": "Lê Duy", "ten": "Tân", "n": 8, "s": 1.9, "moi_noi": 200, "kho_cau": 15.7, "kho_xe": 15.1, "cau_kien": "Trụ"}, {"stt": 22, "msv": "23646831", "ho_dem": "Nguyễn Quốc", "ten": "Thành", "n": 8, "s": 2.0, "moi_noi": 200, "kho_cau": 16.4, "kho_xe": 15.8, "cau_kien": "Trụ"}, {"stt": 23, "22691731": "22691731", "msv": "22691731", "ho_dem": "Huỳnh Bình", "ten": "Trọng", "n": 8, "s": 2.1, "moi_noi": 300, "kho_cau": 17.0, "kho_xe": 16.5, "cau_kien": "Trụ"}, {"stt": 24, "msv": "23662291", "ho_dem": "Đoàn Thanh", "ten": "Trường", "n": 8, "s": 2.2, "moi_noi": 250, "kho_cau": 17.8, "kho_xe": 17.2, "cau_kien": "Trụ"}, {"stt": 25, "msv": "23698111", "ho_dem": "Phan Hữu", "ten": "Vinh", "n": 8, "s": 2.3, "moi_noi": 220, "kho_cau": 18.5, "kho_xe": 17.9, "cau_kien": "Trụ"}];
+
+let currentStudent = null;
+
+function handleInput() {
+    const val = document.getElementById('mssv-input').value.trim();
+    if (!val) {
+        resetForm();
+    }
+}
+
+function resetForm() {
+    document.getElementById('name-preview').style.display = 'none';
+    document.getElementById('btn-confirm').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'none';
+    document.getElementById('result-card').style.display = 'none';
+    currentStudent = null;
+}
+
+function lookupStudent() {
+    const mssv = document.getElementById('mssv-input').value.trim();
+    const errorEl = document.getElementById('error-msg');
+    const previewEl = document.getElementById('name-preview');
+    const confirmBtn = document.getElementById('btn-confirm');
+
+    if (!mssv) {
+        alert("Vui lòng nhập Mã số sinh viên (MSSV)!");
+        return;
+    }
+
+    currentStudent = STUDENTS.find(s => s.msv === mssv);
+
+    if (currentStudent) {
+        errorEl.style.display = 'none';
+        document.getElementById('preview-fullname').innerText = `${currentStudent.ho_dem} ${currentStudent.ten}`;
+        document.getElementById('preview-stt').innerText = currentStudent.stt;
+        previewEl.style.display = 'block';
+        confirmBtn.style.display = 'block';
+    } else {
+        previewEl.style.display = 'none';
+        confirmBtn.style.display = 'none';
+        errorEl.style.display = 'block';
+    }
+}
+
+// Bấm phím Enter tự động kiểm tra
+document.getElementById('mssv-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        lookupStudent();
+    }
+});
+
+function confirmTask() {
+    if (!currentStudent) return;
+
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('vi-VN') + " - " + now.toLocaleDateString('vi-VN');
+
+    // Điền dữ liệu
+    document.getElementById('res-name').innerText = `${currentStudent.ho_dem} ${currentStudent.ten}`;
+    document.getElementById('res-mssv').innerText = currentStudent.msv;
+    document.getElementById('res-caukien').innerText = currentStudent.cau_kien.toUpperCase();
+    document.getElementById('res-n').innerText = currentStudent.n + " dầm";
+    document.getElementById('res-s').innerText = currentStudent.s + " m";
+    document.getElementById('res-moinoi').innerText = currentStudent.moi_noi + " mm";
+    document.getElementById('res-khocau').innerText = currentStudent.kho_cau + " m";
+    document.getElementById('res-khoxe').innerText = currentStudent.kho_xe + " m";
+    document.getElementById('log-time').innerText = timeStr;
+
+    // Hiển thị kết quả
+    document.getElementById('result-card').style.display = 'block';
+    document.getElementById('result-card').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
